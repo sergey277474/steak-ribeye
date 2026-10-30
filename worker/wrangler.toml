@@ -1,0 +1,48 @@
+# Cloudflare Worker: сервер заказов, личный кабинет и Telegram-бот «Свежее мясо и стейки».
+# Логика — в ../bot/core.js (та же, что и для обычного сервера).
+# Секрет BOT_TOKEN задаётся в панели Cloudflare (Settings → Variables and Secrets), не здесь.
+name = "myaso-kubani"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# картинки (аватар группы) подключаются как бинарные данные
+[[rules]]
+type = "Data"
+globs = ["**/*.png"]
+fallthrough = false
+
+[[durable_objects.bindings]]
+name = "SHOP"
+class_name = "Shop"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Shop"]
+
+# Итоги дня, бонусы на день рождения, уборка старых сессий
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+ALLOWED_ORIGIN = "http://lidmasterapp.ru,https://lidmasterapp.ru,https://senyamoralez.github.io"
+SHOP_NAME = "Свежее мясо и стейки"
+SHOP_PHONE = "+7 926 244-37-37"
+PICKUP_ADDRESS = "ул. Саляма Адиля, 4, ТЦ «Патриот», −1 этаж"
+DELIVERY_FEE = "500"
+FREE_DELIVERY_FROM = "5000"
+# Оплата переводом: карта и номер для СБП (карту можно сменить в группе командой /card).
+PAY_CARD = "2204321172295040"
+PAY_CARD_NAME = "Милана П., Озон Банк"
+PAY_PHONE = "+7 985 888-13-75"
+PAY_NOTE = "Оплата по QR-коду СБП на счёт магазина. В назначении платежа укажите номер заказа."
+DAILY_SUMMARY_AT = "21:00"
+WELCOME_BONUS = "300"
+BIRTHDAY_BONUS = "1000"
+MAX_BONUS_SHARE = "0.3"
+# Рабочий чат назначается командой /staff в группе сотрудников. Можно задать и здесь.
+STAFF_CHAT_ID = ""
+# Вход в панель управления сайта (#admin). Хранится только хеш пароля; сменить пароль можно в самой панели.
+ADMIN_LOGIN = "89011020737"
+ADMIN_HASH = "pbkdf2$20000$f012c46b97579b599ec7bddcf2ebbcdb$2ce942fc1bc26577b5ddac3b14bccfbf5a4651a838ab1d0781cd9569c1b1ea3e"
